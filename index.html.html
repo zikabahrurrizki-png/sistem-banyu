@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="BANYU MATENG">
+    <meta name="theme-color" content="#1e3a8a">
+    <meta name="description" content="Aplikasi POS BANYU MATENG - Pure & Hygienic Water">
+    
+    <title>BANYU MATENG - POS v5.0</title>
+    
+    <!-- PWA Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="https://lh3.googleusercontent.com/u/0/d/1IAFK_RJD8wwpGd3ov_I0EMD9o6HzA3jv=w192-h192">
+    <link rel="icon" type="image/png" sizes="512x512" href="https://lh3.googleusercontent.com/u/0/d/1IAFK_RJD8wwpGd3ov_I0EMD9o6HzA3jv=w512-h512">
+    <link rel="apple-touch-icon" href="https://lh3.googleusercontent.com/u/0/d/1IAFK_RJD8wwpGd3ov_I0EMD9o6HzA3jv=w180-h180">
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkJBTllVIE1BVEVORyBQT1MiLAogICJzaG9ydF9uYW1lIjogIkJBTllVIE1BVEVORyIsCiAgImRlc2NyaXB0aW9uIjogIlB1cmUgJiBIeWdpZW5pYyBXYXRlciAtIFN5c3RlbSBQT1MiLAogICJzdGFydF91cmwiOiAiLiIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2ZmZmZmZiIsCiAgInRoZW1lX2NvbG9yIjogIiMxZTNhOGEiLAogICJvcmllbnRhdGlvbiI6ICJwb3J0cmFpdCIsCiAgImljb25zIjogWwogICAgewogICAgICAic3JjIjogImh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS91LzAvZC8xSUFGS19SSkQ4d3dwR2Qzb3ZfSTBFTUQ5bzZIekEzanY9dzE5Mi1oMTkyIiwKICAgICAgInNpemVzIjogIjE5MngxOTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciCiAgICB9LAogICAgewogICAgICAic3JjIjogImh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS91LzAvZC8xSUFGS19SSkQ4d3dwR2Qzb3ZfSTBFTUQ5bzZIekEzanY9dzUxMi1oNTEyIiwKICAgICAgInNpemVzIjogIjUxMng1MTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciCiAgICB9CiAgXQp9">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .animate-slide-down { animation: slideDown 0.2s ease-out; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* PWA Splash Screen */
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            animation: fadeOut 0.5s ease-out 1.5s forwards;
+        }
+        
+        @keyframes fadeOut {
+            to { opacity: 0; visibility: hidden; }
+        }
+        
+        .splash-logo {
+            width: 120px;
+            height: 120px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        /* Toast Notification Styles */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 9999;
+            animation: slideInRight 0.3s ease-out;
+            max-width: 90vw;
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(400px); opacity: 0; }
+        }
+        
+        .toast.hiding { animation: slideOutRight 0.3s ease-out forwards; }
+        .toast-success { border-left: 4px solid #10b981; }
+        .toast-error { border-left: 4px solid #ef4444; }
+        .toast-info { border-left: 4px solid #3b82f6; }
+        
+        @media (max-width: 640px) {
+            .toast { left: 10px; right: 10px; top: 10px; }
+        }
+        
+        /* Hide scrollbar for standalone mode */
+        @media all and (display-mode: standalone) {
+            body { overflow-y: scroll; -webkit-overflow-scrolling: touch; }
+            ::-webkit-scrollbar { display: none; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+    <!-- Splash Screen -->
+    <div class="splash-screen">
+        <img src="https://lh3.googleusercontent.com/u/0/d/1IAFK_RJD8wwpGd3ov_I0EMD9o6HzA3jv=w1000-h1000" class="splash-logo rounded-3xl shadow-2xl">
+        <h1 class="text-white text-3xl font-black mt-6 tracking-tight">BANYU MATENG</h1>
+        <p class="text-blue-200 text-xs font-bold tracking-widest uppercase mt-2">Pure & Hygienic Water</p>
+        <div class="mt-8">
+            <div class="w-16 h-1 bg-white/30 rounded-full overflow-hidden">
+                <div class="h-full bg-white rounded-full animate-pulse" style="width: 60%;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="toast-container"></div>
+    <div id="app"></div>
+
+    <script>
+        // Service Worker Registration for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('data:text/javascript;base64,c2VsZi5hZGRFdmVudExpc3RlbmVyKCdpbnN0YWxsJywgZnVuY3Rpb24oZXZlbnQpIHsKICBzZWxmLnNraXBXYWl0aW5nKCk7Cn0pOwoKc2VsZi5hZGRFdmVudExpc3RlbmVyKCdhY3RpdmF0ZScsIGZ1bmN0aW9uKGV2ZW50KSB7CiAgcmV0dXJuIHNlbGYuY2xpZW50cy5jbGFpbSgpOwp9KTsKCnNlbGYuYWRkRXZlbnRMaXN0ZW5lcignZmV0Y2gnLCBmdW5jdGlvbihldmVudCkgewogIGV2ZW50LnJlc3BvbmRXaXRoKGZldGNoKGV2ZW50LnJlcXVlc3QpKTsKfSk7')
+                    .catch(err => console.log('Service Worker registration failed:', err));
+            });
+        }
+
+        const NAMA_TOKO = "BANYU MATENG";
+        const SLOGAN = "Pure & Hygienic Water";
+        const LOGO_URL = "https://lh3.googleusercontent.com/u/0/d/1IAFK_RJD8wwpGd3ov_I0EMD9o6HzA3jv=w1000-h1000";
+
+        const showToast = (message, type = 'success') => {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const icons = { success: '✓', error: '✕', info: 'ℹ' };
+            
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+                <div class="text-2xl">${icons[type]}</div>
+                <div class="flex-1"><p class="font-bold text-sm text-gray-900">${message}</p></div>
+            `;
+            
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('hiding');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        };
+
+        const getData = (key, defaultValue) => {
+            const saved = localStorage.getItem(key);
+            return saved ? JSON.parse(saved) : defaultValue;
+        };
+        const saveData = (key, value) => {
+            localStorage.setItem(key, JSON.stringify(value));
+        };
+
+        const now = new Date();
+        let state = {
+            activeTab: 'transaksi',
+            selectedMonth: (now.getMonth() + 1).toString().padStart(2, '0'),
+            selectedYear: now.getFullYear().toString(),
+            produk: [],
+            pelanggan: [],
+            transaksi: [],
+            pengeluaran: [],
+            editingProdukId: null,
+            showPelangganList: false,
+            showTodaySales: false,
+            showPengeluaranList: false,
+            showResetMenu: false,
+            newPelanggan: '',
+            newProduk: { nama: '', harga: 0 },
+            newTransaksi: {
+                tanggal: now.toISOString().split('T')[0],
+                pelanggan: '',
+                produkId: '',
+                jumlah: 1,
+                status: 'Bayar'
+            },
+            newPengeluaran: {
+                tanggal: now.toISOString().split('T')[0],
+                keterangan: '',
+                nominal: 0
+            }
+        };
+
+        const updateState = (updates) => { 
+            state = { ...state, ...updates }; 
+            render(); 
+        };
+
+        const formatRupiah = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
+
+        const formatTanggal = (tanggal) => {
+            const d = new Date(tanggal);
+            const hari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'][d.getDay()];
+            const bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'][d.getMonth()];
+            return `${hari}, ${d.getDate()} ${bulan} ${d.getFullYear()}`;
+        };
+
+        const togglePelanggan = (e) => {
+            if(e) e.preventDefault();
+            updateState({ showPelangganList: !state.showPelangganList });
+        };
+
+        const toggleTodaySales = (e) => {
+            if(e) e.preventDefault();
+            updateState({ showTodaySales: !state.showTodaySales });
+        };
+
+        const togglePengeluaranList = (e) => {
+            if(e) e.preventDefault();
+            updateState({ showPengeluaranList: !state.showPengeluaranList });
+        };
+
+        const toggleResetMenu = (e) => {
+            if(e) e.preventDefault();
+            updateState({ showResetMenu: !state.showResetMenu });
+        };
+
+        const tambahPelanggan = () => {
+            const nama = state.newPelanggan.trim();
+            if (nama && !state.pelanggan.includes(nama)) {
+                const pelanggan = [...state.pelanggan, nama].sort();
+                saveData('pelanggan', pelanggan);
+                updateState({ pelanggan, newPelanggan: '', showPelangganList: true });
+                showToast(`Pelanggan "${nama}" berhasil ditambahkan!`, 'success');
+            } else if (state.pelanggan.includes(nama)) {
+                showToast('Nama sudah ada dalam database!', 'error');
+            } else {
+                showToast('Nama pelanggan tidak boleh kosong!', 'error');
+            }
+        };
+
+        const hapusPelanggan = (nama) => {
+            if(confirm(`Hapus ${nama} dari database?`)) {
+                const pelanggan = state.pelanggan.filter(p => p !== nama);
+                saveData('pelanggan', pelanggan);
+                updateState({ pelanggan });
+                showToast(`Pelanggan "${nama}" dihapus`, 'info');
+            }
+        };
+
+        const hapusProduk = (id) => {
+            if(confirm('Hapus produk ini?')) {
+                const produk = state.produk.filter(p => p.id !== id);
+                saveData('produk', produk);
+                updateState({ produk });
+                showToast('Produk berhasil dihapus', 'info');
+            }
+        };
+
+        const hapusPengeluaran = (id) => {
+            if(confirm('Hapus pengeluaran ini?')) {
+                const pengeluaran = state.pengeluaran.filter(p => p.id !== id);
+                saveData('pengeluaran', pengeluaran);
+                updateState({ pengeluaran });
+                showToast('Pengeluaran berhasil dihapus', 'info');
+            }
+        };
+
+        const simpanProduk = () => {
+            if (!state.newProduk.nama || state.newProduk.harga <= 0) {
+                showToast('Nama produk dan harga harus diisi!', 'error');
+                return;
+            }
+            
+            const action = state.editingProdukId ? 'diperbarui' : 'ditambahkan';
+            let produk = state.editingProdukId 
+                ? state.produk.map(p => p.id === state.editingProdukId ? { ...p, ...state.newProduk } : p)
+                : [...state.produk, { id: Date.now(), ...state.newProduk }];
+            
+            saveData('produk', produk);
+            showToast(`Produk "${state.newProduk.nama}" ${action}!`, 'success');
+            updateState({ produk, editingProdukId: null, newProduk: { nama: '', harga: 0 } });
+        };
+
+        const tambahTransaksi = () => {
+            const prod = state.produk.find(p => p.id == state.newTransaksi.produkId);
+            if (!state.newTransaksi.pelanggan || !prod) {
+                showToast('Pelanggan dan produk harus dipilih!', 'error');
+                return;
+            }
+            
+            const transaksi = [{ id: Date.now(), ...state.newTransaksi, namaProduk: prod.nama, hargaSaatItu: prod.harga }, ...state.transaksi];
+            saveData('transaksi', transaksi);
+            showToast(`Transaksi ${prod.nama} x${state.newTransaksi.jumlah} berhasil disimpan!`, 'success');
+            updateState({ 
+                transaksi, 
+                newTransaksi: { 
+                    tanggal: now.toISOString().split('T')[0],
+                    pelanggan: '',
+                    produkId: '',
+                    jumlah: 1,
+                    status: 'Bayar'
+                } 
+            });
+        };
+
+        const tambahPengeluaran = () => {
+            if (!state.newPengeluaran.keterangan || state.newPengeluaran.nominal <= 0) {
+                showToast('Keterangan dan nominal harus diisi!', 'error');
+                return;
+            }
+            
+            const pengeluaran = [{ id: Date.now(), ...state.newPengeluaran }, ...state.pengeluaran];
+            saveData('pengeluaran', pengeluaran);
+            showToast(`Pengeluaran ${formatRupiah(state.newPengeluaran.nominal)} berhasil ditambahkan!`, 'success');
+            updateState({ 
+                pengeluaran, 
+                newPengeluaran: { tanggal: now.toISOString().split('T')[0], keterangan: '', nominal: 0 },
+                showPengeluaranList: true
+            });
+        };
+
+        const exportPDF = () => {
+            const element = document.getElementById('report-area');
+            html2pdf().set({ margin: 10, filename: `Laporan_${NAMA_TOKO}.pdf`, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4' } }).from(element).save();
+            showToast('Laporan PDF sedang diunduh...', 'info');
+        };
+
+        const resetData = () => {
+            const confirmation = confirm('⚠️ PERINGATAN!\n\nAnda akan menghapus SEMUA DATA:\n• Semua Pelanggan\n• Semua Produk\n• Semua Transaksi\n• Semua Pengeluaran\n\nData yang dihapus TIDAK DAPAT dikembalikan!\n\nApakah Anda yakin ingin melanjutkan?');
+            
+            if (confirmation) {
+                const doubleConfirm = confirm('⚠️ KONFIRMASI TERAKHIR!\n\nApakah Anda BENAR-BENAR yakin?\nKlik OK untuk MENGHAPUS SEMUA DATA.');
+                
+                if (doubleConfirm) {
+                    localStorage.removeItem('produk');
+                    localStorage.removeItem('pelanggan');
+                    localStorage.removeItem('transaksi');
+                    localStorage.removeItem('pengeluaran');
+                    
+                    updateState({
+                        produk: [],
+                        pelanggan: [],
+                        transaksi: [],
+                        pengeluaran: [],
+                        activeTab: 'transaksi',
+                        editingProdukId: null,
+                        showPelangganList: false,
+                        showTodaySales: false,
+                        showPengeluaranList: false,
+                        showResetMenu: false,
+                        newPelanggan: '',
+                        newProduk: { nama: '', harga: 0 },
+                        newTransaksi: {
+                            tanggal: now.toISOString().split('T')[0],
+                            pelanggan: '',
+                            produkId: '',
+                            jumlah: 1,
+                            status: 'Bayar'
+                        },
+                        newPengeluaran: {
+                            tanggal: now.toISOString().split('T')[0],
+                            keterangan: '',
+                            nominal: 0
+                        }
+                    });
+                    
+                    showToast('Semua data berhasil dihapus!', 'success');
+                }
+            }
+        };
+
+        const render = () => {
+            const { activeTab, produk, pelanggan, transaksi, pengeluaran, newTransaksi, newPengeluaran, newPelanggan, newProduk, editingProdukId, showPelangganList, showTodaySales, showPengeluaranList, showResetMenu, selectedMonth, selectedYear } = state;
+
+            const today = new Date().toISOString().split('T')[0];
+            const todayTransaksi = transaksi.filter(t => t.tanggal === today);
+            const todayTotal = todayTransaksi.reduce((s, t) => s + (t.jumlah * t.hargaSaatItu), 0);
+
+            const todayPengeluaran = pengeluaran.filter(p => p.tanggal === today);
+            const todayPengeluaranTotal = todayPengeluaran.reduce((s, p) => s + p.nominal, 0);
+
+            const filterData = (data) => data.filter(item => {
+                const d = new Date(item.tanggal);
+                return (d.getMonth() + 1).toString().padStart(2, '0') === selectedMonth && d.getFullYear().toString() === selectedYear;
+            });
+
+            const fTransaksi = filterData(transaksi);
+            const fPengeluaran = filterData(pengeluaran);
+            const totalCash = fTransaksi.filter(t => t.status === 'Bayar').reduce((s, t) => s + (t.jumlah * t.hargaSaatItu), 0);
+            const totalKeluar = fPengeluaran.reduce((s, p) => s + p.nominal, 0);
+            const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+
+            document.getElementById('app').innerHTML = `
+                <div class="max-w-4xl mx-auto p-3 sm:p-4 pb-24">
+                    <header class="flex justify-between items-center mb-4 sm:mb-6">
+                        <div class="flex items-center gap-2 sm:gap-3">
+                            <img src="${LOGO_URL}" class="w-10 h-10 sm:w-12 sm:h-12 object-contain">
+                            <div>
+                                <h1 class="text-lg sm:text-xl font-black text-blue-900 leading-none uppercase">${NAMA_TOKO}</h1>
+                                <p class="text-[7px] sm:text-[8px] font-bold text-blue-400 tracking-widest uppercase">${SLOGAN}</p>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <button onclick="toggleResetMenu(event)" class="bg-gray-100 hover:bg-gray-200 text-gray-600 w-10 h-10 rounded-full text-xl font-black shadow-sm active:scale-95 transition flex items-center justify-center">
+                                ⚙️
+                            </button>
+                            ${showResetMenu ? `
+                                <div class="absolute right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-200 p-4 z-50 min-w-[280px] animate-slide-down">
+                                    <div class="text-center mb-3">
+                                        <p class="text-xs font-black text-gray-700 uppercase tracking-wider">Pengaturan Sistem</p>
+                                    </div>
+                                    <button onclick="resetData()" class="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-3 rounded-xl text-xs font-black uppercase shadow-lg active:scale-95 transition flex items-center justify-center gap-2">
+                                        <span>🗑️</span>
+                                        <span>Reset Semua Data</span>
+                                    </button>
+                                    <p class="text-[9px] text-gray-400 text-center mt-2 font-bold">⚠️ Akan menghapus semua data</p>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </header>
+
+                    <nav class="flex gap-2 mb-4 sm:mb-6 overflow-x-auto no-scrollbar pb-2">
+                        ${['transaksi', 'pengeluaran', 'pelanggan', 'rekap'].map(tab => `
+                            <button onclick="updateState({activeTab: '${tab}'})" class="px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-[9px] sm:text-[10px] font-black tracking-widest transition whitespace-nowrap ${activeTab === tab ? 'bg-blue-700 text-white shadow-lg' : 'bg-white text-gray-400 border'}">
+                                ${tab === 'pelanggan' ? 'DATA & PELANGGAN' : tab.toUpperCase()}
+                            </button>
+                        `).join('')}
+                    </nav>
+
+                    ${activeTab === 'transaksi' ? `
+                        <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border mb-4">
+                            <h2 class="font-black mb-3 sm:mb-4 text-xs text-blue-900 uppercase">Input Penjualan</h2>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <input type="date" value="${newTransaksi.tanggal}" onchange="state.newTransaksi.tanggal = this.value" class="p-3 border rounded-xl text-sm bg-gray-50">
+                                <select onchange="state.newTransaksi.pelanggan = this.value" class="p-3 border rounded-xl text-sm bg-gray-50 font-bold">
+                                    <option value="">-- Pilih Pelanggan --</option>
+                                    ${pelanggan.map(p => `<option value="${p}" ${newTransaksi.pelanggan === p ? 'selected' : ''}>${p}</option>`).join('')}
+                                </select>
+                                <select onchange="state.newTransaksi.produkId = this.value" class="p-3 border rounded-xl text-sm bg-blue-50 font-bold text-blue-700">
+                                    <option value="">-- Pilih Produk --</option>
+                                    ${produk.map(p => `<option value="${p.id}" ${newTransaksi.produkId == p.id ? 'selected' : ''}>${p.nama} (${formatRupiah(p.harga)})</option>`).join('')}
+                                </select>
+                                <input type="number" value="${newTransaksi.jumlah}" onchange="state.newTransaksi.jumlah = parseInt(this.value)" class="p-3 border rounded-xl text-sm bg-gray-50" placeholder="Qty">
+                            </div>
+                            <button onclick="tambahTransaksi()" class="w-full mt-4 bg-blue-700 text-white py-3 sm:py-4 rounded-xl font-black text-sm shadow-lg active:scale-95 transition">SIMPAN TRANSAKSI</button>
+                        </div>
+
+                        <div class="bg-white rounded-2xl border shadow-sm overflow-hidden">
+                            <div onclick="toggleTodaySales(event)" class="w-full p-4 sm:p-5 flex justify-between items-center bg-gray-50 hover:bg-gray-100 cursor-pointer transition-all active:bg-gray-200">
+                                <div class="text-left">
+                                    <h2 class="font-black text-xs text-blue-900 uppercase tracking-widest">Penjualan Hari Ini</h2>
+                                    <p class="text-[10px] text-blue-500 font-black uppercase mt-1">${todayTransaksi.length} Transaksi • ${formatRupiah(todayTotal)}</p>
+                                </div>
+                                <div class="bg-white w-8 h-8 sm:w-10 sm:h-10 rounded-full shadow-sm flex items-center justify-center border transition-transform ${showTodaySales ? 'rotate-180' : ''}">
+                                    <span class="text-blue-900 text-xs font-black">▼</span>
+                                </div>
+                            </div>
+                            
+                            <div class="${showTodaySales ? 'block' : 'hidden'} border-t border-gray-100 bg-white animate-slide-down overflow-x-auto">
+                                <table class="w-full text-left text-sm min-w-full">
+                                    <thead class="bg-gray-50 text-[9px] font-black text-gray-400 border-b uppercase">
+                                        <tr><th class="p-3 sm:p-4 whitespace-nowrap">Pelanggan</th><th class="p-3 sm:p-4 whitespace-nowrap">Produk</th><th class="p-3 sm:p-4 text-right whitespace-nowrap">Total</th></tr>
+                                    </thead>
+                                    <tbody class="divide-y">
+                                        ${todayTransaksi.length > 0 ? todayTransaksi.map(t => `
+                                            <tr>
+                                                <td class="p-3 sm:p-4 font-bold text-blue-900 text-xs sm:text-sm">${t.pelanggan}</td>
+                                                <td class="p-3 sm:p-4 text-[10px] text-gray-400 font-bold uppercase">${t.namaProduk} x${t.jumlah}</td>
+                                                <td class="p-3 sm:p-4 text-right font-black text-xs sm:text-sm whitespace-nowrap">${formatRupiah(t.jumlah * t.hargaSaatItu)}</td>
+                                            </tr>
+                                        `).join('') : `
+                                            <tr><td colspan="3" class="p-8 text-center text-gray-400 text-xs font-bold">Belum ada transaksi hari ini</td></tr>
+                                        `}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    ${activeTab === 'pelanggan' ? `
+                        <div class="bg-blue-900 p-4 sm:p-6 rounded-3xl shadow-xl border mb-4 sm:mb-6 text-white">
+                            <h2 class="font-black mb-3 sm:mb-4 text-[11px] tracking-widest uppercase opacity-70">Pengaturan Produk</h2>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                                <input type="text" value="${newProduk.nama}" oninput="state.newProduk.nama = this.value" class="p-3 rounded-xl bg-white text-blue-900 text-xs font-bold" placeholder="Nama Item">
+                                <input type="number" value="${newProduk.harga || ''}" oninput="state.newProduk.harga = parseInt(this.value) || 0" class="p-3 rounded-xl bg-white text-blue-900 text-xs font-black" placeholder="Harga">
+                            </div>
+                            <button onclick="simpanProduk()" class="w-full bg-blue-500 text-white py-3 rounded-xl font-black text-xs uppercase shadow-md mb-4 active:scale-95 transition">${editingProdukId ? 'Update' : 'Tambah'} Produk</button>
+                            <div class="space-y-2 max-h-40 overflow-y-auto no-scrollbar">
+                                ${produk.length > 0 ? produk.map(p => `
+                                    <div class="flex justify-between items-center bg-blue-800/50 p-3 rounded-xl border border-blue-700/50 text-xs font-bold">
+                                        <span class="flex-1 mr-2">${p.nama} - ${formatRupiah(p.harga)}</span>
+                                        <div class="flex gap-2 flex-shrink-0">
+                                            <button onclick='updateState({editingProdukId: ${p.id}, newProduk: {nama: "${p.nama}", harga: ${p.harga}}})' class="p-1 hover:scale-110 transition">✏️</button>
+                                            <button onclick="hapusProduk(${p.id})" class="p-1 hover:scale-110 transition">✕</button>
+                                        </div>
+                                    </div>
+                                `).join('') : '<p class="text-center text-blue-300 text-xs py-4">Belum ada produk</p>'}
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div class="bg-white p-4 sm:p-6 rounded-3xl border shadow-sm">
+                                <h2 class="font-black mb-3 sm:mb-4 text-xs text-blue-900 uppercase tracking-widest">Tambah Pelanggan Baru</h2>
+                                <div class="flex flex-col sm:flex-row gap-2">
+                                    <input type="text" oninput="state.newPelanggan = this.value" value="${newPelanggan}" class="flex-1 p-3 sm:p-4 border rounded-2xl bg-gray-50 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Masukkan Nama...">
+                                    <button onclick="tambahPelanggan()" class="bg-blue-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-2xl font-black text-xs active:scale-95 transition shadow-lg">TAMBAH</button>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-3xl border shadow-sm overflow-hidden">
+                                <div onclick="togglePelanggan(event)" class="w-full p-4 sm:p-6 flex justify-between items-center bg-gray-50 hover:bg-gray-100 cursor-pointer transition-all active:bg-gray-200">
+                                    <div class="text-left">
+                                        <h2 class="font-black text-xs text-blue-900 uppercase tracking-widest">Daftar Pelanggan Aktif</h2>
+                                        <p class="text-[10px] text-blue-500 font-black uppercase mt-1">${pelanggan.length} Nama Tersimpan</p>
+                                    </div>
+                                    <div class="bg-white w-8 h-8 sm:w-10 sm:h-10 rounded-full shadow-sm flex items-center justify-center border transition-transform ${showPelangganList ? 'rotate-180' : ''}">
+                                        <span class="text-blue-900 text-xs font-black">▼</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="${showPelangganList ? 'block' : 'hidden'} p-4 sm:p-6 border-t border-gray-100 bg-white animate-slide-down">
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                        ${pelanggan.length > 0 ? pelanggan.map(p => `
+                                            <div class="bg-gray-50 p-3 sm:p-4 rounded-2xl text-sm border flex justify-between items-center group hover:border-blue-200 transition">
+                                                <span class="font-black text-blue-900 uppercase tracking-tight text-xs sm:text-sm flex-1 mr-2">${p}</span>
+                                                <button onclick="hapusPelanggan('${p.replace(/'/g, "\\'")}')" class="text-gray-300 hover:text-red-500 font-bold p-2 transition flex-shrink-0">✕</button>
+                                            </div>
+                                        `).join('') : '<p class="text-center text-gray-400 text-xs py-4 col-span-2">Belum ada pelanggan</p>'}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    ${activeTab === 'pengeluaran' ? `
+                         <div class="bg-white p-4 sm:p-5 rounded-3xl shadow-sm border mb-4">
+                            <h2 class="font-black mb-3 sm:mb-4 text-xs text-gray-400 uppercase tracking-widest">Input Operasional</h2>
+                            <div class="grid grid-cols-1 gap-3">
+                                <input type="date" value="${newPengeluaran.tanggal}" onchange="state.newPengeluaran.tanggal = this.value" class="p-3 sm:p-4 border rounded-2xl text-sm bg-gray-50">
+                                <input type="text" value="${newPengeluaran.keterangan}" oninput="state.newPengeluaran.keterangan = this.value" class="p-3 sm:p-4 border rounded-2xl text-sm bg-gray-50" placeholder="Keterangan Biaya">
+                                <input type="number" value="${newPengeluaran.nominal || ''}" oninput="state.newPengeluaran.nominal = parseInt(this.value) || 0" class="p-3 sm:p-4 border rounded-2xl text-sm bg-gray-50 font-black text-red-600" placeholder="Nominal Rp">
+                            </div>
+                            <button onclick="tambahPengeluaran()" class="w-full mt-4 bg-red-600 text-white py-3 sm:py-4 rounded-2xl font-black text-sm shadow-xl uppercase active:scale-95 transition">Simpan Biaya</button>
+                        </div>
+
+                        <div class="bg-white rounded-2xl border shadow-sm overflow-hidden mb-4">
+                            <div onclick="togglePengeluaranList(event)" class="w-full p-4 sm:p-5 flex justify-between items-center bg-red-50 hover:bg-red-100 cursor-pointer transition-all active:bg-red-200">
+                                <div class="text-left">
+                                    <h2 class="font-black text-xs text-red-900 uppercase tracking-widest">Pengeluaran Hari Ini</h2>
+                                    <p class="text-[10px] text-red-500 font-black uppercase mt-1">${todayPengeluaran.length} Item • ${formatRupiah(todayPengeluaranTotal)}</p>
+                                </div>
+                                <div class="bg-white w-8 h-8 sm:w-10 sm:h-10 rounded-full shadow-sm flex items-center justify-center border transition-transform ${showPengeluaranList ? 'rotate-180' : ''}">
+                                    <span class="text-red-900 text-xs font-black">▼</span>
+                                </div>
+                            </div>
+                            
+                            <div class="${showPengeluaranList ? 'block' : 'hidden'} border-t border-gray-100 bg-white animate-slide-down">
+                                <div class="divide-y max-h-96 overflow-y-auto">
+                                    ${todayPengeluaran.length > 0 ? todayPengeluaran.map(p => `
+                                        <div class="p-3 sm:p-4 flex justify-between items-center hover:bg-gray-50">
+                                            <div class="flex-1 mr-2">
+                                                <p class="font-bold text-red-900 text-xs sm:text-sm">${p.keterangan}</p>
+                                                <p class="text-[9px] text-gray-400 mt-1">${formatTanggal(p.tanggal)}</p>
+                                            </div>
+                                            <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+                                                <p class="font-black text-red-600 text-xs sm:text-sm whitespace-nowrap">${formatRupiah(p.nominal)}</p>
+                                                <button onclick="hapusPengeluaran(${p.id})" class="text-gray-300 hover:text-red-500 font-bold p-2 transition">✕</button>
+                                            </div>
+                                        </div>
+                                    `).join('') : `
+                                        <div class="p-8 text-center text-gray-400 text-xs font-bold">Belum ada pengeluaran hari ini</div>
+                                    `}
+                                </div>
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    ${activeTab === 'rekap' ? `
+                        <div class="mb-4 flex flex-col sm:flex-row justify-between gap-2">
+                            <select onchange="updateState({selectedMonth: this.value})" class="text-xs p-3 border rounded-xl bg-white font-black">
+                                ${months.map((m, i) => `<option value="${(i+1).toString().padStart(2, '0')}" ${selectedMonth == (i+1) ? 'selected' : ''}>${m}</option>`).join('')}
+                            </select>
+                            <button onclick="exportPDF()" class="bg-blue-900 text-white px-6 py-3 rounded-xl text-[10px] font-black shadow-lg uppercase active:scale-95 transition">Download PDF</button>
+                        </div>
+                        <div id="report-area" class="space-y-4 bg-white p-6 sm:p-8 rounded-3xl border">
+                            <div class="text-center mb-6 border-b pb-6 sm:pb-8 flex flex-col items-center">
+                                <img src="${LOGO_URL}" class="w-16 h-16 sm:w-20 sm:h-20 object-contain mb-4">
+                                <h2 class="text-xl sm:text-2xl font-black text-blue-900 leading-none uppercase tracking-tighter">${NAMA_TOKO}</h2>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-2">${SLOGAN}</p>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3 sm:gap-4 text-center mb-6">
+                                <div class="p-4 sm:p-5 bg-blue-50 rounded-2xl border border-blue-100">
+                                    <p class="text-[9px] font-black text-blue-400 uppercase">Total Cash In</p>
+                                    <p class="text-lg sm:text-xl font-black text-blue-700 mt-1">${formatRupiah(totalCash)}</p>
+                                </div>
+                                <div class="p-4 sm:p-5 bg-red-50 rounded-2xl border border-red-100">
+                                    <p class="text-[9px] font-black text-red-400 uppercase">Total Cash Out</p>
+                                    <p class="text-lg sm:text-xl font-black text-red-700 mt-1">${formatRupiah(totalKeluar)}</p>
+                                </div>
+                            </div>
+                            <div class="p-5 sm:p-6 bg-blue-900 rounded-3xl text-white shadow-xl text-center mb-6">
+                                <p class="text-[10px] font-bold opacity-70 uppercase tracking-widest mb-1">Profit Bersih</p>
+                                <p class="text-2xl sm:text-3xl font-black">${formatRupiah(totalCash - totalKeluar)}</p>
+                            </div>
+                            
+                            <div class="border-t pt-6 mb-6">
+                                <h3 class="font-black text-xs text-blue-900 uppercase tracking-widest mb-4">Detail Transaksi Per Pelanggan</h3>
+                                <div class="space-y-3 max-h-80 overflow-y-auto">
+                                    ${fTransaksi.length > 0 ? (() => {
+                                        const grouped = fTransaksi.reduce((acc, t) => {
+                                            if (!acc[t.pelanggan]) acc[t.pelanggan] = [];
+                                            acc[t.pelanggan].push(t);
+                                            return acc;
+                                        }, {});
+                                        
+                                        return Object.keys(grouped).map(pelanggan => {
+                                            const transaksiPelanggan = grouped[pelanggan];
+                                            const jumlahTransaksi = transaksiPelanggan.length;
+                                            const totalNominal = transaksiPelanggan.reduce((sum, t) => sum + (t.jumlah * t.hargaSaatItu), 0);
+                                            
+                                            const produkList = transaksiPelanggan.reduce((acc, t) => {
+                                                const key = t.namaProduk;
+                                                if (!acc[key]) acc[key] = { nama: t.namaProduk, jumlah: 0, harga: t.hargaSaatItu };
+                                                acc[key].jumlah += t.jumlah;
+                                                return acc;
+                                            }, {});
+                                            
+                                            const produkDetail = Object.values(produkList).map(p => `${p.nama} x${p.jumlah}`).join(', ');
+                                            
+                                            return `
+                                                <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                                                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
+                                                        <div class="flex-1">
+                                                            <p class="font-black text-blue-900 text-sm">${pelanggan}</p>
+                                                            <p class="text-[10px] text-blue-500 font-bold uppercase mt-1">${jumlahTransaksi} Transaksi</p>
+                                                        </div>
+                                                        <p class="font-black text-blue-700 text-base sm:text-lg">${formatRupiah(totalNominal)}</p>
+                                                    </div>
+                                                    <div class="bg-white/60 p-2 rounded-lg mt-2">
+                                                        <p class="text-[10px] text-blue-700 font-bold">${produkDetail}</p>
+                                                    </div>
+                                                </div>
+                                            `;
+                                        }).join('');
+                                    })() : `
+                                        <p class="text-center text-gray-400 text-xs py-4">Tidak ada transaksi bulan ini</p>
+                                    `}
+                                </div>
+                            </div>
+
+                            <div class="border-t pt-6">
+                                <h3 class="font-black text-xs text-red-900 uppercase tracking-widest mb-4">Detail Pengeluaran</h3>
+                                <div class="space-y-2 max-h-80 overflow-y-auto">
+                                    ${fPengeluaran.length > 0 ? fPengeluaran.map(p => `
+                                        <div class="bg-red-50 p-4 rounded-xl border border-red-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                                            <div class="flex-1">
+                                                <p class="font-black text-red-900 text-sm">${p.keterangan}</p>
+                                                <p class="text-[9px] text-gray-400 mt-1">${formatTanggal(p.tanggal)}</p>
+                                            </div>
+                                            <p class="font-black text-red-700 text-sm sm:text-base">${formatRupiah(p.nominal)}</p>
+                                        </div>
+                                    `).join('') : `
+                                        <p class="text-center text-gray-400 text-xs py-4">Tidak ada pengeluaran bulan ini</p>
+                                    `}
+                                </div>
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        };
+
+        render();
+    </script>
+</body>
+</html>
